@@ -1,6 +1,10 @@
+select *
+from customer
+
+
 --Question 1
 -- Join address and customer
-select *
+select first_name, last_name, a.district
 from customer c
 join address a
 on a.address_id = c.address_id
@@ -95,9 +99,12 @@ group by c.first_name, c.last_name, a.district, ci.city, co.country;
 
 -- Select from film_category and list number of movies by name of category, use category_id
 
-select *
-from film f
-join film_category fc on f.
+select c.category_id, c."name", count(fc.category_id) as num_movies_in_cat
+from category c 
+join film_category fc 
+on c.category_id = fc.category_id
+group by c.category_id
+order by num_movies_in_cat desc ;
 
 
 --category_id|name       |num_movies_in_cat|
@@ -122,6 +129,19 @@ join film_category fc on f.
 
 
 -- Question 6
+select film.film_id, film.title, count(*) as num_actors
+from film
+join film_actor 
+on film.film_id = film_actor.film_id 
+group by film.film_id 
+having count(*) = (
+    select max(num_actors)
+    from (
+        select film_id, count(*) as num_actors
+        from film_actor 
+        group by film_id 
+        order by count(*) desc
+    ));
 
 
 --film_id|title           |num_actors|
@@ -131,6 +151,12 @@ join film_category fc on f.
 
 -- Question 7 
 
+select a.actor_id, a.first_name, a.last_name, count(fa.actor_id) as num_films 
+from actor a
+join film_actor fa
+on a.actor_id = fa.actor_id 
+group by a.actor_id 
+order by num_films ASC;
 
 --actor_id|first_name|last_name|num_films|
 ----------+----------+---------+---------+
@@ -138,6 +164,13 @@ join film_category fc on f.
 
 
 -- Question 8
+
+select country, count(city_id)
+from country c 
+join city c2 
+on c.country_id = c2.country_id 
+group by country 
+order by count(city_id) desc;
 
 
 --country_id|country                              |num_cities|
@@ -149,6 +182,12 @@ join film_category fc on f.
 
 -- Question 9
 
+select a.actor_id, a.first_name, a.last_name, count(fa.film_id)
+from actor a 
+join film_actor fa 
+on a.actor_id = fa.actor_id 
+group by a.actor_id 
+having count(*) between 20 and 25;
 
 --actor_id|first_name |last_name  |count|
 ----------+-----------+-----------+-----+
